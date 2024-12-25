@@ -81,13 +81,10 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
     boolean slide_speed;
     boolean claw_isClosed = true;
     int DELAY = 2000;
-    double zeroOffset = 0.2;
-    double increment = 0;
-    double decrement = 0;
-    double claw_speed;
-    double claw_speed2;
+    double openClawPosition=0.03;
+    double closedClawPosition=0.0;
+    int time_since_claw_action = 0;
 
-    int clawWait = 0;
     @Override
     public void runOpMode() {
 
@@ -132,9 +129,8 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
-            double yaw = gamepad1.right_stick_x * 0.7;
-            turret_speed = gamepad1.right_trigger - gamepad1.left_trigger;
-            slide_speed = gamepad1.right_bumper;
+            double yaw = gamepad1.right_stick_x * 0.5;
+
             //claw_speed = gamepad2.right_trigger;
             //claw_speed2 = -gamepad2.left_trigger;
 
@@ -162,8 +158,6 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
                 rightBackPower /= max;
             }
 
-            //increment the claw reaction wait timer
-            clawWait++;
 
             // This is test code:
             //
@@ -188,6 +182,8 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+            //triggers are floats
+            turret_speed = gamepad1.left_trigger - gamepad1.right_trigger;
             turret.setPower(turret_speed);
 
             /*if(gamepad1.x){
@@ -197,31 +193,34 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
                 Clawservo.setPosition(0.03);
             } */
 
-            // attempting a single-button open/close... not working well
-            if (gamepad1.y && (clawWait > DELAY)) {
+            //increment the claw reaction wait timer
+            time_since_claw_action++;
+
+            // for a single-button open/close need enough delay to prevent immediate reversal
+            if (gamepad1.y && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
-                    Clawservo.setPosition(0.02);   //open position
+                    Clawservo.setPosition(openClawPosition);   //open position
                     claw_isClosed = false;
                 }
                 else if (!claw_isClosed) {
-                    Clawservo.setPosition(0.0);  //closed position
+                    Clawservo.setPosition(closedClawPosition);  //closed position
                     claw_isClosed = true;
                 }
-                clawWait = 0;
+                time_since_claw_action = 0;
             }
 
 
             if (gamepad1.left_bumper) {
-                rightSlide.setPower(1);
-                leftSlide.setPower(1);
+                rightSlide.setPower(-1);
+                leftSlide.setPower(-1);
             } else if (!gamepad1.left_bumper) {
                 rightSlide.setPower(0);
                 leftSlide.setPower(0);
             }
 
             if (gamepad1.right_bumper) {
-                leftSlide.setPower(-1);
-                rightSlide.setPower(-1);
+                leftSlide.setPower(1);
+                rightSlide.setPower(1);
             } else if (!gamepad1.right_bumper) {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
