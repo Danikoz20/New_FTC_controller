@@ -79,11 +79,15 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
     private Servo Clawservo = null;
     double turret_speed;
     boolean slide_speed;
+    boolean claw_isClosed = true;
+    int DELAY = 2000;
     double zeroOffset = 0.2;
     double increment = 0;
     double decrement = 0;
     double claw_speed;
     double claw_speed2;
+
+    int clawWait = 0;
     @Override
     public void runOpMode() {
 
@@ -102,18 +106,6 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
         Clawservo = hardwareMap.get(Servo.class, "Servo1");
-
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -125,6 +117,7 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        Clawservo.setPosition(0.0);
 
         //initialize the servo position in open state
         Clawservo.setPosition(0);
@@ -137,20 +130,24 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x * 0.7;
-            turret_speed = gamepad2.right_stick_y;
-            slide_speed = gamepad2.right_bumper;
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x * 0.7;
+            turret_speed = gamepad1.right_trigger - gamepad1.left_trigger;
+            slide_speed = gamepad1.right_bumper;
             //claw_speed = gamepad2.right_trigger;
             //claw_speed2 = -gamepad2.left_trigger;
 
+            /* if (gamepad1.right_trigger) {turret_speed = 1;}
+            else if (gamepad1.left_trigger) {turret_speed = -1;}
+            else {turret_speed = 0;} */
+
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
+            double leftFrontPower = axial + lateral + yaw;
             double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftBackPower = axial - lateral + yaw;
+            double rightBackPower = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -159,11 +156,14 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
+
+            //increment the claw reaction wait timer
+            clawWait++;
 
             // This is test code:
             //
@@ -190,24 +190,39 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
 
             turret.setPower(turret_speed);
 
-            if(gamepad1.x){
+            /*if(gamepad1.x){
                 Clawservo.setPosition(0.0);
             }
             else if(gamepad1.y){
                 Clawservo.setPosition(0.03);
+            } */
+
+            // attempting a single-button open/close... not working well
+            if (gamepad1.y && (clawWait > DELAY)) {
+                if (claw_isClosed) {
+                    Clawservo.setPosition(0.02);   //open position
+                    claw_isClosed = false;
+                }
+                else if (!claw_isClosed) {
+                    Clawservo.setPosition(0.0);  //closed position
+                    claw_isClosed = true;
+                }
+                clawWait = 0;
             }
 
-            if(gamepad1.right_bumper){
+
+            if (gamepad1.left_bumper) {
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
-            } else if(!gamepad1.right_bumper){
+            } else if (!gamepad1.left_bumper) {
                 rightSlide.setPower(0);
                 leftSlide.setPower(0);
             }
-            if(gamepad1.left_bumper){
+
+            if (gamepad1.right_bumper) {
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else if(!gamepad1.left_bumper){
+            } else if (!gamepad1.right_bumper) {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
@@ -218,5 +233,6 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
+            }
         }
-    }}
+    }
