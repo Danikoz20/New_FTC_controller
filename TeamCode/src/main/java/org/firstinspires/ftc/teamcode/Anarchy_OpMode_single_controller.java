@@ -186,13 +186,6 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             turret_speed = gamepad1.left_trigger - gamepad1.right_trigger;
             turret.setPower(turret_speed);
 
-            /*if(gamepad1.x){
-                Clawservo.setPosition(0.0);
-            }
-            else if(gamepad1.y){
-                Clawservo.setPosition(0.03);
-            } */
-
             //increment the claw reaction wait timer
             time_since_claw_action++;
 
