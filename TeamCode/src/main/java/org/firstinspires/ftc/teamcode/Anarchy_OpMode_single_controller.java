@@ -81,8 +81,8 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
     boolean slide_speed;
     boolean claw_isClosed = true;
     int DELAY = 2000;
-    double openClawPosition=0.03;
-    double closedClawPosition=0.0;
+    double openClawPosition=0.04;
+    double closedClawPosition=0.01;
     int time_since_claw_action = 0;
 
     @Override
@@ -190,7 +190,7 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             time_since_claw_action++;
 
             // for a single-button open/close need enough delay to prevent immediate reversal
-            if (gamepad1.y && (time_since_claw_action > DELAY)) {
+            if (gamepad1.x && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
                     Clawservo.setPosition(openClawPosition);   //open position
                     claw_isClosed = false;
