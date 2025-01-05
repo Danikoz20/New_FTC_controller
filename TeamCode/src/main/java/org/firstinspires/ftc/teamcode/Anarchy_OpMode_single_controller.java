@@ -77,13 +77,18 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
     private Servo Clawservo = null;
+    private Servo Wheelservo = null;
     double turret_speed;
     boolean slide_speed;
     boolean claw_isClosed = true;
-    int DELAY = 2000;
+    boolean wheel_isClosed = true;
+    int CLAW_DELAY = 2000;
     double openClawPosition=0.04;
+    double openWheelPosition=0.04;
     double closedClawPosition=0.01;
+    double closedWheelPosition=0.01;
     int time_since_claw_action = 0;
+    int time_since_wheel_action = 0;
 
     @Override
     public void runOpMode() {
@@ -103,6 +108,7 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
         Clawservo = hardwareMap.get(Servo.class, "Servo1");
+        Wheelservo = hardwareMap.get(Servo.class, "Servo14");
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -190,7 +196,7 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             time_since_claw_action++;
 
             // for a single-button open/close need enough delay to prevent immediate reversal
-            if (gamepad1.x && (time_since_claw_action > DELAY)) {
+            if (gamepad1.x && (time_since_claw_action > CLAW_DELAY)) {
                 if (claw_isClosed) {
                     Clawservo.setPosition(openClawPosition);   //open position
                     claw_isClosed = false;
@@ -200,6 +206,22 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
                     claw_isClosed = true;
                 }
                 time_since_claw_action = 0;
+            }
+           // This is wheel intake for the thing
+            //
+            //time_since_wheel_action;
+
+            // for a single-button open/close need enough delay to prevent immediate reversal
+            if (gamepad1.y && (time_since_wheel_action > CLAW_DELAY)) {
+                if (wheel_isClosed) {
+                    Wheelservo.setPosition(openWheelPosition);   //open position
+                    wheel_isClosed = false;
+                }
+                else if (!wheel_isClosed) {
+                    Wheelservo.setPosition(closedWheelPosition);  //closed position
+                    wheel_isClosed = true;
+                }
+                time_since_wheel_action = 0;
             }
 
 
