@@ -76,13 +76,14 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
     private DcMotor turret = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
-    private Servo Clawservo = null;
+    private Servo LeftRoller = null;
+    private Servo RightRoller = null;
     double turret_speed;
     boolean slide_speed;
     boolean claw_isClosed = true;
     int DELAY = 2000;
-    double openClawPosition=0.04;
-    double closedClawPosition=0.01;
+    double openClawPosition=0.1;
+    double closedClawPosition=0.0;
     int time_since_claw_action = 0;
 
     @Override
@@ -102,7 +103,9 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "Turret");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-        Clawservo = hardwareMap.get(Servo.class, "Servo1");
+        LeftRoller = hardwareMap.get(Servo.class, "LeftRoller");
+        RightRoller = hardwareMap.get(Servo.class, "RightRoller");
+
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -110,14 +113,14 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
         turret.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        LeftRoller.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        Clawservo.setPosition(0.0);
+        LeftRoller.setPosition(0.0);
+        RightRoller.setPosition(0.0);
 
-        //initialize the servo position in open state
-        Clawservo.setPosition(0);
 
         waitForStart();  // Wait until driver presses start
         runtime.reset();
@@ -192,16 +195,17 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
             // for a single-button open/close need enough delay to prevent immediate reversal
             if (gamepad1.x && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
-                    Clawservo.setPosition(openClawPosition);   //open position
+                    LeftRoller.setPosition(openClawPosition);   //open position
+                    RightRoller.setPosition(openClawPosition);
                     claw_isClosed = false;
                 }
                 else if (!claw_isClosed) {
-                    Clawservo.setPosition(closedClawPosition);  //closed position
+                    LeftRoller.setPosition(closedClawPosition);  //closed position
+                    RightRoller.setPosition(closedClawPosition);
                     claw_isClosed = true;
                 }
                 time_since_claw_action = 0;
             }
-
 
             if (gamepad1.left_bumper) {
                 rightSlide.setPower(-1);
