@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -78,6 +79,8 @@ public class Anarchy_OpMode extends LinearOpMode {
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
     private Servo Clawservo = null;
+    private CRServo LeftRoller = null;
+    private CRServo RightRoller = null;
     double turret_speed;
     boolean slide_speed;
     double zeroOffset = 0.2;
@@ -85,6 +88,12 @@ public class Anarchy_OpMode extends LinearOpMode {
     double decrement = 0;
     double claw_speed;
     double claw_speed2;
+    int time_since_claw_action = 0;
+    int DELAY = 2000;
+    boolean claw_isClosed = true;
+    private double openClawPosition = 0.0;
+    private double closedClawPosition = 0.15;
+
     @Override
     public void runOpMode() {
 
@@ -102,7 +111,10 @@ public class Anarchy_OpMode extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "Turret");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-        Clawservo = hardwareMap.get(Servo.class, "Servo1");
+       // Clawservo = hardwareMap.get(Servo.class, "Servo1");
+        LeftRoller = hardwareMap.get(CRServo.class, "LeftRoller");
+        RightRoller = hardwareMap.get(CRServo.class, "RightRoller");
+        LeftRoller.setDirection(CRServo.Direction.REVERSE);
 
 
         // ########################################################################################
@@ -126,9 +138,11 @@ public class Anarchy_OpMode extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+       // LeftRoller.setPosition(0.0);
+       // RightRoller.setPosition(0.0);
 
         //initialize the servo position in open state
-        Clawservo.setPosition(0);
+       // Clawservo.setPosition(0);
 
         waitForStart();  // Wait until driver presses start
         runtime.reset();
@@ -141,6 +155,9 @@ public class Anarchy_OpMode extends LinearOpMode {
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x * 0.7;
+            double speedFactor = 0.45;
+
+
             turret_speed = gamepad2.right_stick_y;
             slide_speed = gamepad2.right_bumper;
             //claw_speed = gamepad2.right_trigger;
@@ -148,10 +165,21 @@ public class Anarchy_OpMode extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftFrontPower  = (axial + lateral + yaw) * speedFactor;
+            double rightFrontPower = (axial - lateral - yaw) * speedFactor;
+            double leftBackPower   = (axial - lateral + yaw) * speedFactor;
+            double rightBackPower  = (axial + lateral - yaw) * speedFactor;
+            if(gamepad1.right_bumper){
+                leftFrontPower = (axial + lateral + yaw);
+                rightFrontPower = (axial - lateral - yaw);
+                leftBackPower = (axial - lateral + yaw);
+                rightBackPower = (axial + lateral - yaw);
+            } else{
+                leftFrontPower  = (axial + lateral + yaw) * speedFactor;
+                rightFrontPower = (axial - lateral - yaw) * speedFactor;
+                leftBackPower   = (axial - lateral + yaw) * speedFactor;
+                rightBackPower  = (axial + lateral - yaw) * speedFactor;
+            }
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -191,12 +219,29 @@ public class Anarchy_OpMode extends LinearOpMode {
 
             turret.setPower(turret_speed);
 
-            if(gamepad2.x){
-                Clawservo.setPosition(0.0);
+            time_since_claw_action++;
+
+
+            if (gamepad2.x/* && (time_since_claw_action > DELAY)*/) {
+                    LeftRoller.setPower(-1);   //open position
+                    RightRoller.setPower(-1);
+
+
+           /*     else if (!claw_isClosed) {
+                    LeftRoller.setPosition(closedClawPosition);  //closed position
+                    RightRoller.setPosition(closedClawPosition);
+                    claw_isClosed = true;
+                }
+                time_since_claw_action = 0;
+           */ } else if(!gamepad2.x){
+                LeftRoller.setPower(0);
+                RightRoller.setPower(0);
             }
-            else if(gamepad2.y){
-                Clawservo.setPosition(0.03);
+            if(gamepad2.y){
+                LeftRoller.setPower(1);
+                RightRoller.setPower(1);
             }
+
 
             if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
@@ -218,6 +263,11 @@ public class Anarchy_OpMode extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            if(claw_isClosed){
+                telemetry.addData("Out", "taking");
+            } else {
+                telemetry.addData("In", "Taking");
+            }
             telemetry.update();
         }
     }}
