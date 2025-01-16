@@ -78,12 +78,18 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
     private DcMotor leftSlide = null;
     private Servo LeftRoller = null;
     private Servo RightRoller = null;
+
+    double leftSlidePOS = 0;
+    double rightSlidePOS = 0;
+
+
+
     double turret_speed;
     boolean slide_speed;
     boolean claw_isClosed = true;
     int DELAY = 2000;
-    double openClawPosition=0.1;
-    double closedClawPosition=0.0;
+    double openClawPosition=0.0;
+    double closedClawPosition=0.15;
     int time_since_claw_action = 0;
 
     @Override
@@ -115,6 +121,20 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         LeftRoller.setDirection(Servo.Direction.REVERSE);
 
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+      //  rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlidePOS = leftSlide.getCurrentPosition();
+        rightSlidePOS = rightSlide.getCurrentPosition();
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -128,7 +148,8 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
-
+            //right:
+            //left:
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
@@ -228,6 +249,8 @@ public class Anarchy_OpMode_roller_claw extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("rightSlidePOS", rightSlidePOS);
+            telemetry.addData("leftSlidePOS", leftSlidePOS);
             telemetry.update();
             }
         }

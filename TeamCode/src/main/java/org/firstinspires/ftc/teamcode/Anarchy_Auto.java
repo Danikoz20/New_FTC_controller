@@ -32,6 +32,7 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -54,21 +55,26 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Robot: Auto Drive By Time", group="Robot")
-@Disabled
-public class RobotAutoDriveByTime_Linear extends LinearOpMode {
+@Autonomous(name="Anarchy_Auto")
+public class Anarchy_Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private DcMotor turret = null;
+    private DcMotor rightSlide = null;
+    private DcMotor leftSlide = null;
+    double turret_speed;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
 
     static final double     FORWARD_SPEED = 0.6;
     static final double     TURN_SPEED    = 0.5;
+    private CRServo LeftRoller = null;
+    private CRServo RightRoller = null;
 
     @Override
     public void runOpMode() {
@@ -78,6 +84,12 @@ public class RobotAutoDriveByTime_Linear extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "Backleft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Frontright");
         rightBackDrive = hardwareMap.get(DcMotor.class, "Backright");
+        turret = hardwareMap.get(DcMotor.class, "Turret");
+        rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
+        leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
+        LeftRoller = hardwareMap.get(CRServo.class, "LeftRoller");
+        RightRoller = hardwareMap.get(CRServo.class, "RightRoller");
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -86,6 +98,11 @@ public class RobotAutoDriveByTime_Linear extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        turret.setDirection(DcMotor.Direction.REVERSE);
+        rightSlide.setDirection(DcMotor.Direction.FORWARD);
+        leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        LeftRoller.setDirection(CRServo.Direction.REVERSE);
+        turret_speed = 0.5;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -102,32 +119,131 @@ public class RobotAutoDriveByTime_Linear extends LinearOpMode {
         rightBackDrive.setPower(FORWARD_SPEED);
         rightFrontDrive.setPower(FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 2:  Spin right for 1.3 seconds
-        leftBackDrive.setPower(TURN_SPEED);
-        leftFrontDrive.setPower(TURN_SPEED);
-        rightFrontDrive.setPower(TURN_SPEED);
-        rightBackDrive.setPower(TURN_SPEED);
+        // Step 2:  Strafe Left
+        leftBackDrive.setPower(0.59);
+        leftFrontDrive.setPower(-0.59);
+        rightFrontDrive.setPower(0.59);
+        rightBackDrive.setPower(-0.59);
+
+        //turret.setPower(0.3);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
             telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 3:  Drive Backward for 1 Second
-        leftFrontDrive.setPower(-FORWARD_SPEED);
-        leftBackDrive.setPower(-FORWARD_SPEED);
-        rightBackDrive.setPower(-FORWARD_SPEED);
-        rightFrontDrive.setPower(-FORWARD_SPEED);
+        // Step 3:  Drive Forward
+
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.01)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
+        leftBackDrive.setPower(-0.7);
+        leftFrontDrive.setPower(-0.7);
+        rightFrontDrive.setPower(0.7);
+        rightBackDrive.setPower(0.7);
+        turret.setPower(-0.85);
+
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.8)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+
+        leftBackDrive.setPower(0.15);
+        leftFrontDrive.setPower(0.15);
+        rightFrontDrive.setPower(0.15);
+        rightBackDrive.setPower(0.15);
+        leftSlide.setPower(0.7);
+        rightSlide.setPower(0.7);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        turret.setPower(0.3);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        LeftRoller.setPower(-1);
+        RightRoller.setPower(-1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.9)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        turret.setPower(-0.3);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(-0.5);
+        leftFrontDrive.setPower(-0.5);
+        rightFrontDrive.setPower(-0.5);
+        rightBackDrive.setPower(-0.5);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(0.68);
+        leftFrontDrive.setPower(0.68);
+        rightFrontDrive.setPower(-0.68);
+        rightBackDrive.setPower(-0.68);
+        turret.setPower(0.75);
+        leftSlide.setPower(-0.2);
+        rightSlide.setPower(-0.2);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.8)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        leftBackDrive.setPower(-0.4);
+        leftFrontDrive.setPower(-0.4);
+        rightFrontDrive.setPower(-0.4);
+        rightBackDrive.setPower(-0.4);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(0.19);
+        leftFrontDrive.setPower(-0.19);
+        rightFrontDrive.setPower(0.19);
+        rightBackDrive.setPower(-0.19);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        sleep(1000);
+        leftBackDrive.setPower(0.5);
+        leftFrontDrive.setPower(0.5);
+        rightFrontDrive.setPower(0.5);
+        rightBackDrive.setPower(0.5);
+        LeftRoller.setPower(1);
+        RightRoller.setPower(1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+
 
         // Step 4:  Stop
         leftBackDrive.setPower(0);
