@@ -1,3 +1,5 @@
+
+
 /* Copyright (c) 2021 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,12 +31,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -64,7 +67,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
+@TeleOp(name="Basic: Omni Linear OpMode CLAW", group="Linear OpMode Hand_Claw")
 //@Disabled
 public class Anarchy_OpMode_handclaw extends LinearOpMode {
 
@@ -78,8 +81,8 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
     private Servo Clawservo = null;
-    private CRServo LeftRoller = null;
-    private CRServo RightRoller = null;
+    private Servo LeftClaw = null;
+    private Servo RightClaw = null;
     double turret_speed;
     boolean slide_speed;
     double zeroOffset = 0.2;
@@ -90,8 +93,8 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
     int time_since_claw_action = 0;
     int DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.0;
-    private double closedClawPosition = 0.15;
+    private double openClawPosition = 0.3;
+    private double closedClawPosition = 0.01;
 
     @Override
     public void runOpMode() {
@@ -110,10 +113,10 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "Turret");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-       // Clawservo = hardwareMap.get(Servo.class, "Servo1");
-        LeftRoller = hardwareMap.get(CRServo.class, "LeftRoller");
-        RightRoller = hardwareMap.get(CRServo.class, "RightRoller");
-        LeftRoller.setDirection(CRServo.Direction.REVERSE);
+        // Clawservo = hardwareMap.get(Servo.class, "Servo1");
+        LeftClaw = hardwareMap.get(Servo.class, "LeftRoller");
+        RightClaw = hardwareMap.get(Servo.class, "RightRoller");
+        RightClaw.setDirection(Servo.Direction.REVERSE);
 
 
         // ########################################################################################
@@ -137,14 +140,15 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-       // LeftRoller.setPosition(0.0);
-       // RightRoller.setPosition(0.0);
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
 
         //initialize the servo position in open state
-       // Clawservo.setPosition(0);
+        // Clawservo.setPosition(0);
 
         waitForStart();  // Wait until driver presses start
         runtime.reset();
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -221,28 +225,20 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             time_since_claw_action++;
 
 
-            if (gamepad2.x/* && (time_since_claw_action > DELAY)*/) {
-                    LeftRoller.setPower(-1);   //open position
-                    RightRoller.setPower(-1);
-
-
-           /*     else if (!claw_isClosed) {
-                    LeftRoller.setPosition(closedClawPosition);  //closed position
-                    RightRoller.setPosition(closedClawPosition);
+            if (gamepad2.x && (time_since_claw_action > DELAY)) {
+                if (claw_isClosed) {
+                    LeftClaw.setPosition(openClawPosition);
+                    RightClaw.setPosition(openClawPosition);
+                    claw_isClosed = false;
+                } else {  // claw is open
+                    LeftClaw.setPosition(closedClawPosition);
+                    RightClaw.setPosition(closedClawPosition);
                     claw_isClosed = true;
                 }
                 time_since_claw_action = 0;
-           */ } else if(!gamepad2.x){
-                LeftRoller.setPower(0);
-                RightRoller.setPower(0);
-            }
-            if(gamepad2.y){
-                LeftRoller.setPower(1);
-                RightRoller.setPower(1);
             }
 
-
-            if(gamepad2.right_bumper){
+                if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
             } else if(!gamepad2.right_bumper){
