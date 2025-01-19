@@ -118,12 +118,13 @@ public class DistanceSensor_Test extends LinearOpMode {
                 leftBackDrive.setPower(0);
                 rightFrontDrive.setPower(0);
                 rightBackDrive.setPower(0);
+                break;
             }
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.addData("Left Distance", distance_left);
             telemetry.addData("Right Distance", distance_right);
             telemetry.update();
-            break;
+
         }
 
 
