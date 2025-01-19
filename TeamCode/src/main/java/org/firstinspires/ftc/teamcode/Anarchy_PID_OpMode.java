@@ -94,8 +94,8 @@ public class Anarchy_PID_OpMode extends LinearOpMode {
     int time_since_claw_action = 0;
     int DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.0;
-    private double closedClawPosition = 0.15;
+    private double openClawPosition = 0.033;
+    private double closedClawPosition = 0.01;
     double Kp = 0.1;
     double Ki = 0.01;
     double Kd = 0.01;
