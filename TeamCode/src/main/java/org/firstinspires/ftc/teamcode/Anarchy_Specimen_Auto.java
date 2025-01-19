@@ -125,12 +125,14 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+//Move Turret Up
         turret.setPower(-0.75);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.7)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+//Extend Slides
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
@@ -138,7 +140,7 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
+//Move Turret back down
         turret.setPower(0.75);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {
@@ -146,7 +148,7 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
             telemetry.update();
         }
 
-
+//Move Forward
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
