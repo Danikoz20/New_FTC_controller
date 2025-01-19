@@ -84,8 +84,6 @@ public class DistanceSensor_Test extends LinearOpMode {
         distance_Sensor_left = hardwareMap.get(DistanceSensor.class, "distance_Sensor_left");
         distance_Sensor_right = hardwareMap.get(DistanceSensor.class, "distance_Sensor_right");
 
-        double distance_left = distance_Sensor_left.getDistance(DistanceUnit.CM);
-        double distance_right = distance_Sensor_right.getDistance(DistanceUnit.CM);
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -103,20 +101,24 @@ public class DistanceSensor_Test extends LinearOpMode {
 
         waitForStart();
 //Move Forwards
-        leftFrontDrive.setPower(0.5);
-        leftBackDrive.setPower(0.5);
-        rightFrontDrive.setPower(0.5);
-        rightBackDrive.setPower(0.5);
 
-        if(distance_left <= 6.35 && distance_right <= 6.35){
-            leftFrontDrive.setPower(0);
-            leftBackDrive.setPower(0);
-            rightFrontDrive.setPower(0);
-            rightBackDrive.setPower(0);
-        }
 
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 20)) {
+            double distance_left = distance_Sensor_left.getDistance(DistanceUnit.CM);
+            double distance_right = distance_Sensor_right.getDistance(DistanceUnit.CM);
+
+            leftFrontDrive.setPower(0.5);
+            leftBackDrive.setPower(0.5);
+            rightFrontDrive.setPower(0.5);
+            rightBackDrive.setPower(0.5);
+
+            if(distance_left <= 6.35 && distance_right <= 6.35){
+                leftFrontDrive.setPower(0);
+                leftBackDrive.setPower(0);
+                rightFrontDrive.setPower(0);
+                rightBackDrive.setPower(0);
+            }
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
