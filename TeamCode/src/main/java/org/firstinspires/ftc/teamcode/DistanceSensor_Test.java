@@ -60,7 +60,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Anarchy_Specimen_Auto")
+@Autonomous(name="DistanceSensor_Test")
 public class DistanceSensor_Test extends LinearOpMode {
 
     /* Declare OpMode members. */
