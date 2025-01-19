@@ -69,7 +69,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="Basic: Omni Linear OpMode CLAW", group="Linear OpMode Hand_Claw")
-//@Disabled
+@Disabled
 public class Anarchy_PID_OpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -96,7 +96,7 @@ public class Anarchy_PID_OpMode extends LinearOpMode {
     boolean claw_isClosed = true;
     private double openClawPosition = 0.033;
     private double closedClawPosition = 0.01;
-    double Kp = 0.05;
+    double Kp = 0.01;
     double Ki = 0.01;
     double Kd = 0.01;
     int currentPosition;

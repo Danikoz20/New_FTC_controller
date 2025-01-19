@@ -64,8 +64,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Basic: OpMode Single Controller", group="Linear OpMode")
-
-//@Disabled
+@Disabled
 public class Anarchy_OpMode_single_controller extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
