@@ -120,6 +120,37 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        turret.setPower(-0.75);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftSlide.setPower(0.7);
+        rightSlide.setPower(0.7);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        turret.setPower(0.75);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+
+        leftFrontDrive.setPower(0.5);
+        leftBackDrive.setPower(0.5);
+        rightFrontDrive.setPower(0.5);
+        rightBackDrive.setPower(0.5);
 
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2.5)) {
