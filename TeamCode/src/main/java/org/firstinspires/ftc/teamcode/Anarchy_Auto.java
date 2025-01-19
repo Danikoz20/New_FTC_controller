@@ -56,6 +56,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Anarchy_Auto")
+@Disabled
 public class Anarchy_Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
