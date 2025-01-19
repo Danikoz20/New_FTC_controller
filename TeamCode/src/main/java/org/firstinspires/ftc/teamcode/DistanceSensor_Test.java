@@ -68,8 +68,8 @@ public class DistanceSensor_Test extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DistanceSensor distanceSensor_left = null;
-    private DistanceSensor distanceSensor_right = null;
+    private DistanceSensor distance_Sensor_left = null;
+    private DistanceSensor distance_Sensor_right = null;
 
 
     private ElapsedTime     runtime = new ElapsedTime();
@@ -81,11 +81,11 @@ public class DistanceSensor_Test extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "Backleft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Frontright");
         rightBackDrive = hardwareMap.get(DcMotor.class, "Backright");
-        distanceSensor_left = hardwareMap.get(DistanceSensor.class, "distanceSensor_left");
-        distanceSensor_right = hardwareMap.get(DistanceSensor.class, "distance_Sensor_right");
+        distance_Sensor_left = hardwareMap.get(DistanceSensor.class, "distance_Sensor_left");
+        distance_Sensor_right = hardwareMap.get(DistanceSensor.class, "distance_Sensor_right");
 
-        double distance_left = distanceSensor_left.getDistance(DistanceUnit.CM);
-        double distance_right = distanceSensor_right.getDistance(DistanceUnit.CM);
+        double distance_left = distance_Sensor_left.getDistance(DistanceUnit.CM);
+        double distance_right = distance_Sensor_right.getDistance(DistanceUnit.CM);
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
