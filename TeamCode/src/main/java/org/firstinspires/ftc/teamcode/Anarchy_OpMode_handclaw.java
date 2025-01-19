@@ -137,6 +137,8 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
 
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -224,6 +226,16 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
 
             time_since_claw_action++;
 
+            if(gamepad2.a){
+
+                int Targetpos = 0;
+
+                turret.setTargetPosition(Targetpos);
+                turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turret.setPower(1);
+
+            }
+
 
             if (gamepad2.x && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
@@ -258,6 +270,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Turret_POS: ", turret.getCurrentPosition());
             if(claw_isClosed){
                 telemetry.addData("Out", "taking");
             } else {
