@@ -173,6 +173,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             double rightFrontPower = (axial - lateral - yaw) * speedFactor;
             double leftBackPower   = (axial - lateral + yaw) * speedFactor;
             double rightBackPower  = (axial + lateral - yaw) * speedFactor;
+
             if(gamepad1.right_bumper){
                 leftFrontPower = (axial + lateral + yaw);
                 rightFrontPower = (axial - lateral - yaw);
@@ -221,6 +222,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+            turret.setPower(turret_speed);
 
             time_since_claw_action++;
 
@@ -239,32 +241,34 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
                 time_since_claw_action = 0;
             }
 
-                if(gamepad2.right_bumper){
+            if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
-            } else if(!gamepad2.right_bumper){
+            } else {
                 rightSlide.setPower(0);
                 leftSlide.setPower(0);
             }
+
             if(gamepad2.left_bumper){
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else if(!gamepad2.left_bumper){
+            } else {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
 
 
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            /*telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addData("Turret_POS: ", turret.getCurrentPosition());
             if(claw_isClosed){
                 telemetry.addData("Out", "taking");
             } else {
-                telemetry.addData("In", "Taking");
+                telemetry.addData("In", "taking");
             }
-            telemetry.update();
+            telemetry.update();*/
         }
-    }}
+    }
+}
