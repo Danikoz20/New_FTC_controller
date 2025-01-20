@@ -69,7 +69,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Basic: Omni Linear OpMode CLAW", group="Linear OpMode Hand_Claw")
 //@Disabled
-public class Anarchy_OpMode_handclaw extends LinearOpMode {
+public class Spec_Macro_Test extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -137,6 +137,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
 
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -221,9 +222,19 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+            turret.setPower(turret_speed);
 
             time_since_claw_action++;
 
+            if(gamepad2.a){
+
+                int Targetpos = 0;
+
+                turret.setTargetPosition(Targetpos);
+                turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turret.setPower(1);
+
+            }
 
 
             if (gamepad2.x && (time_since_claw_action > DELAY)) {
@@ -239,7 +250,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
                 time_since_claw_action = 0;
             }
 
-                if(gamepad2.right_bumper){
+            if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
             } else if(!gamepad2.right_bumper){
