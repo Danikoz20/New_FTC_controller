@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -68,9 +67,9 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Omni Linear OpMode CLAW", group="Linear OpMode Hand_Claw")
+@TeleOp(name="Double_Turret_Test", group="Linear OpMode Hand_Claw_doubleturret")
 //@Disabled
-public class Spec_Macro_Test extends LinearOpMode {
+public class Double_Turret_Test extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -97,10 +96,6 @@ public class Spec_Macro_Test extends LinearOpMode {
     boolean claw_isClosed = true;
     private double openClawPosition = 0.033;
     private double closedClawPosition = 0.01;
-
-    int Specimen_hang_angle = -1090;
-
-    int angle_error = 150;
 
     @Override
     public void runOpMode() {
@@ -140,17 +135,10 @@ public class Spec_Macro_Test extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        turretLeft = hardwareMap.get(DcMotor.class, "Turret_Left");
-        turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
+        turretRight.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
-        turretRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turretLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -161,12 +149,16 @@ public class Spec_Macro_Test extends LinearOpMode {
         //initialize the servo position in open state
         // Clawservo.setPosition(0);
 
+
+
         waitForStart();  // Wait until driver presses start
         runtime.reset();
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -176,7 +168,7 @@ public class Spec_Macro_Test extends LinearOpMode {
             double speedFactor = 0.45;
 
 
-            turret_speed = - gamepad2.right_stick_y;
+            turret_speed = -gamepad2.right_stick_y;
             slide_speed = gamepad2.right_bumper;
             //claw_speed = gamepad2.right_trigger;
             //claw_speed2 = -gamepad2.left_trigger;
@@ -187,6 +179,7 @@ public class Spec_Macro_Test extends LinearOpMode {
             double rightFrontPower = (axial - lateral - yaw) * speedFactor;
             double leftBackPower   = (axial - lateral + yaw) * speedFactor;
             double rightBackPower  = (axial + lateral - yaw) * speedFactor;
+
             if(gamepad1.right_bumper){
                 leftFrontPower = (axial + lateral + yaw);
                 rightFrontPower = (axial - lateral - yaw);
@@ -240,34 +233,6 @@ public class Spec_Macro_Test extends LinearOpMode {
 
             time_since_claw_action++;
 
-            /*if(gamepad2.a) {
-
-                turretLeft.setTargetPosition(Specimen_hang_angle*0);
-                turretRight.setTargetPosition(Specimen_hang_angle*0);
-
-                turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                turretLeft.setPower(1);
-                turretRight.setPower(1);
-
-            } else {
-                turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }*/
-
-            if (gamepad2.b) {
-                if (turretRight.getCurrentPosition() > (Specimen_hang_angle + angle_error)) {
-                    turretRight.setPower(1);
-                    turretLeft.setPower(1);
-                } else if (turretRight.getCurrentPosition() < (Specimen_hang_angle - angle_error)) {
-                    turretRight.setPower(-1);
-                    turretLeft.setPower(-1);
-                } else {
-                    turretRight.setPower(0);
-                    turretLeft.setPower(0);
-                }
-            }
 
 
             if (gamepad2.x && (time_since_claw_action > DELAY)) {
@@ -286,30 +251,31 @@ public class Spec_Macro_Test extends LinearOpMode {
             if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
-            } else if(!gamepad2.right_bumper){
+            } else {
                 rightSlide.setPower(0);
                 leftSlide.setPower(0);
             }
+
             if(gamepad2.left_bumper){
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else if(!gamepad2.left_bumper){
+            } else {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
 
 
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            /*telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Turret_LEFT_POS: ", turretLeft.getCurrentPosition());
-            telemetry.addData("Turret_LEFT_POS", turretRight.getCurrentPosition());
+            telemetry.addData("Turret_POS: ", turret.getCurrentPosition());
             if(claw_isClosed){
                 telemetry.addData("Out", "taking");
             } else {
-                telemetry.addData("In", "Taking");
+                telemetry.addData("In", "taking");
             }
-            telemetry.update();
+            telemetry.update();*/
         }
-    }}
+    }
+}
