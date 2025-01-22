@@ -65,7 +65,8 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor turret = null;
+    private DcMotor turretLeft = null;
+    private DcMotor turretRight = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
     private TouchSensor touchSensor_left = null;
@@ -77,8 +78,8 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
 
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
-    private double openClawPosition = 0.033;
-    private double closedClawPosition = 0.01;
+    private double openClawPosition = 0.01;
+    private double closedClawPosition = 0.04;
 
     @Override
     public void runOpMode() {
@@ -88,13 +89,12 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "Backleft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Frontright");
         rightBackDrive = hardwareMap.get(DcMotor.class, "Backright");
-        turret = hardwareMap.get(DcMotor.class, "Turret");
+        turretLeft = hardwareMap.get(DcMotor.class, "Turret_Left");
+        turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
         LeftClaw = hardwareMap.get(Servo.class, "LeftRoller");
         RightClaw = hardwareMap.get(Servo.class, "RightRoller");
-        touchSensor_left = hardwareMap.get(TouchSensor.class, "touchSensor_left");
-        touchSensor_right = hardwareMap.get(TouchSensor.class, "touchSensor_right");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -104,7 +104,7 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        turret.setDirection(DcMotor.Direction.REVERSE);
+        turretRight.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         RightClaw.setDirection(Servo.Direction.REVERSE);
@@ -115,44 +115,114 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
 
 
         waitForStart();
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
+
+
+        //Move Turret Up
+        turretLeft.setPower(1);
+        turretRight.setPower(1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.75)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        turretLeft.setPower(0.0);
+        turretRight.setPower(0.0);
+
 //Move Forwards
+        leftFrontDrive.setPower(1);
+        leftBackDrive.setPower(1);
+        rightFrontDrive.setPower(1);
+        rightBackDrive.setPower(1);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(1);
+        leftFrontDrive.setPower(-1);
+        rightFrontDrive.setPower(1);
+        rightBackDrive.setPower(-1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftFrontDrive.setPower(1);
+        leftBackDrive.setPower(1);
+        rightFrontDrive.setPower(1);
+        rightBackDrive.setPower(1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.2)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(0.0);
+        leftFrontDrive.setPower(0.0);
+        rightFrontDrive.setPower(0.0);
+        rightBackDrive.setPower(0.0);
+
+        sleep(500);
+
+
+//Extend Slides
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-//Move Turret Up
-        turret.setPower(-0.75);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-//Extend Slides
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-//Move Turret back down
-        turret.setPower(0.75);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
+        leftSlide.setPower(0.0);
+        rightSlide.setPower(0.0);
+        sleep(500);
+
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+//Move Turret back down
+        turretLeft.setPower(-0.7);
+        turretRight.setPower(-0.7);
+
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.2)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        turretLeft.setPower(0.0);
+        turretRight.setPower(0.0);
+        //sleep(500);
+
+
+        leftSlide.setPower(-0.5);
+        rightSlide.setPower(-0.5);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 2)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftSlide.setPower(0.0);
+        rightSlide.setPower(0.0);
+        //sleep(500);
+        /*
 //Move Forward
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
+        sleep(500);
 
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2.5)) {
@@ -240,7 +310,7 @@ public class Anarchy_Specimen_Auto extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
+        */
 
 
         // Step 4:  Stop

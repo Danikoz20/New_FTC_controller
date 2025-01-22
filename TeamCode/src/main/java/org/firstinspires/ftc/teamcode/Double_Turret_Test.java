@@ -94,7 +94,7 @@ public class Double_Turret_Test extends LinearOpMode {
     int time_since_claw_action = 0;
     int DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.033;
+    private double openClawPosition = 0.045;
     private double closedClawPosition = 0.01;
 
     @Override
