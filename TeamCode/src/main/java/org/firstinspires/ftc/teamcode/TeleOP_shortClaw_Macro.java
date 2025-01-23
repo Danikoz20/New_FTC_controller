@@ -84,16 +84,20 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
     private Servo RightClaw = null;
     double turret_speed;
     boolean slide_speed;
-    double zeroOffset = 0.2;
-    double increment = 0;
-    double decrement = 0;
-    double claw_speed;
-    double claw_speed2;
+
+    double speedFactor = 0.45;
     int time_since_claw_action = 0;
     int DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.045;
-    private double closedClawPosition = 0.01;
+    double openClawPosition = 0.045;
+    double closedClawPosition = 0.015;
+
+    int HighChamberAngle = 1000;
+    int HighBasketAngle = 1500;
+    int WallAngle = 200;
+
+    // Flag to indicate if macro is active
+    private boolean TurretMacroActive = false;
 
     @Override
     public void runOpMode() {
@@ -141,12 +145,10 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        //initialize the Claw servo position in closed state
         LeftClaw.setPosition(closedClawPosition);
         RightClaw.setPosition(closedClawPosition);
-
-        //initialize the servo position in open state
-        // Clawservo.setPosition(0);
-
 
 
         waitForStart();  // Wait until driver presses start
@@ -156,20 +158,14 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x * 0.7;
-            double speedFactor = 0.45;
 
-
-            turret_speed = -gamepad2.right_stick_y;
             slide_speed = gamepad2.right_bumper;
-            //claw_speed = gamepad2.right_trigger;
-            //claw_speed2 = -gamepad2.left_trigger;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -226,12 +222,31 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            turretLeft.setPower(turret_speed);
-            turretRight.setPower(turret_speed);
+            turret_speed = -gamepad2.right_stick_y;
+
+            // Check for joystick input to cancel Turret macro
+            if (Math.abs(turret_speed) > 0.01) {
+                TurretMacroActive = false;
+                //not sure if needed
+                turretLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                turretRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                turretLeft.setPower(turret_speed);
+                turretRight.setPower(turret_speed);
+            }
+
+            // Activate Turret Macro for high chamber angle
+            if (gamepad1.a && !TurretMacroActive) {
+                TurretMacroActive = true;
+                turretLeft.setTargetPosition(HighChamberAngle);
+                turretRight.setTargetPosition(HighChamberAngle);
+                turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turretLeft.setPower(0.5);
+                turretRight.setPower(0.5);
+            }
+
 
             time_since_claw_action++;
-
-
 
             if (gamepad2.x && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
@@ -261,6 +276,7 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
+
 
 
             // Show the elapsed game time and wheel power.
