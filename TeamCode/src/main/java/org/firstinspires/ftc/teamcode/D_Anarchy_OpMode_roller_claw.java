@@ -64,9 +64,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: OpMode Single Controller", group="Linear OpMode")
+@TeleOp(name="Basic: OpMode Single Roller Claw", group="Linear OpMode")
 @Disabled
-public class Anarchy_OpMode_single_controller extends LinearOpMode {
+public class D_Anarchy_OpMode_roller_claw extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -77,13 +77,20 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
     private DcMotor turret = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
-    private Servo Clawservo = null;
+    private Servo LeftRoller = null;
+    private Servo RightRoller = null;
+
+    double leftSlidePOS = 0;
+    double rightSlidePOS = 0;
+
+
+
     double turret_speed;
     boolean slide_speed;
     boolean claw_isClosed = true;
     int DELAY = 2000;
-    double openClawPosition=0.04;
-    double closedClawPosition=0.01;
+    double openClawPosition=0.0;
+    double closedClawPosition=0.15;
     int time_since_claw_action = 0;
 
     @Override
@@ -103,7 +110,9 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "Turret");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-        Clawservo = hardwareMap.get(Servo.class, "Servo1");
+        LeftRoller = hardwareMap.get(Servo.class, "LeftRoller");
+        RightRoller = hardwareMap.get(Servo.class, "RightRoller");
+
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -111,14 +120,28 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         turret.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        LeftRoller.setDirection(Servo.Direction.REVERSE);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+      //  rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftSlidePOS = leftSlide.getCurrentPosition();
+        rightSlidePOS = rightSlide.getCurrentPosition();
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        Clawservo.setPosition(0.0);
+        LeftRoller.setPosition(0.0);
+        RightRoller.setPosition(0.0);
 
-        //initialize the servo position in open state
-        Clawservo.setPosition(0);
 
         waitForStart();  // Wait until driver presses start
         runtime.reset();
@@ -126,7 +149,8 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
-
+            //right:
+            //left:
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
@@ -193,16 +217,17 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             // for a single-button open/close need enough delay to prevent immediate reversal
             if (gamepad1.x && (time_since_claw_action > DELAY)) {
                 if (claw_isClosed) {
-                    Clawservo.setPosition(openClawPosition);   //open position
+                    LeftRoller.setPosition(openClawPosition);   //open position
+                    RightRoller.setPosition(openClawPosition);
                     claw_isClosed = false;
                 }
                 else if (!claw_isClosed) {
-                    Clawservo.setPosition(closedClawPosition);  //closed position
+                    LeftRoller.setPosition(closedClawPosition);  //closed position
+                    RightRoller.setPosition(closedClawPosition);
                     claw_isClosed = true;
                 }
                 time_since_claw_action = 0;
             }
-
 
             if (gamepad1.left_bumper) {
                 rightSlide.setPower(-1);
@@ -225,6 +250,8 @@ public class Anarchy_OpMode_single_controller extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("rightSlidePOS", rightSlidePOS);
+            telemetry.addData("leftSlidePOS", leftSlidePOS);
             telemetry.update();
             }
         }

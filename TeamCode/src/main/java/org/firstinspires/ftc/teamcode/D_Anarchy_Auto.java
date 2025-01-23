@@ -27,14 +27,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -56,8 +55,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Anarchy_Claw_Auto")
-public class Anarchy_Claw_Auto extends LinearOpMode {
+@Autonomous(name="Anarchy_Auto")
+@Disabled
+public class D_Anarchy_Auto extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor leftFrontDrive = null;
@@ -74,10 +74,8 @@ public class Anarchy_Claw_Auto extends LinearOpMode {
 
     static final double     FORWARD_SPEED = 0.6;
     static final double     TURN_SPEED    = 0.5;
-    private Servo LeftClaw = null;
-    private Servo RightClaw = null;
-    private double openClawPosition = 0.033;
-    private double closedClawPosition = 0.01;
+    private CRServo LeftRoller = null;
+    private CRServo RightRoller = null;
 
     @Override
     public void runOpMode() {
@@ -90,8 +88,8 @@ public class Anarchy_Claw_Auto extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "Turret");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-        LeftClaw = hardwareMap.get(Servo.class, "LeftRoller");
-        RightClaw = hardwareMap.get(Servo.class, "RightRoller");
+        LeftRoller = hardwareMap.get(CRServo.class, "LeftRoller");
+        RightRoller = hardwareMap.get(CRServo.class, "RightRoller");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -104,7 +102,7 @@ public class Anarchy_Claw_Auto extends LinearOpMode {
         turret.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
-        RightClaw.setDirection(Servo.Direction.REVERSE);
+        LeftRoller.setDirection(CRServo.Direction.REVERSE);
         turret_speed = 0.5;
 
         // Send telemetry message to signify robot waiting;
@@ -180,8 +178,8 @@ public class Anarchy_Claw_Auto extends LinearOpMode {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        LeftClaw.setPosition(openClawPosition);
-        RightClaw.setPosition(openClawPosition);
+        LeftRoller.setPower(-1);
+        RightRoller.setPower(-1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.9)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
@@ -238,6 +236,8 @@ public class Anarchy_Claw_Auto extends LinearOpMode {
         leftFrontDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
+        LeftRoller.setPower(1);
+        RightRoller.setPower(1);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());

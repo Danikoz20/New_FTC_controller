@@ -34,8 +34,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -68,8 +68,8 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="Basic: Omni Linear OpMode CLAW", group="Linear OpMode Hand_Claw")
-//@Disabled
-public class Anarchy_OpMode_handclaw extends LinearOpMode {
+@Disabled
+public class D_Spec_Macro_Test extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -77,7 +77,8 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor turret = null;
+    private DcMotor turretLeft = null;
+    private DcMotor turretRight = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
     private Servo Clawservo = null;
@@ -96,6 +97,10 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
     private double openClawPosition = 0.033;
     private double closedClawPosition = 0.01;
 
+    int Specimen_hang_angle = -1090;
+
+    int angle_error = 150;
+
     @Override
     public void runOpMode() {
 
@@ -110,7 +115,8 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "Backleft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Frontright");
         rightBackDrive = hardwareMap.get(DcMotor.class, "Backright");
-        turret = hardwareMap.get(DcMotor.class, "Turret");
+        turretLeft = hardwareMap.get(DcMotor.class, "Turret_Left");
+        turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
         // Clawservo = hardwareMap.get(Servo.class, "Servo1");
@@ -133,10 +139,17 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        turret.setDirection(DcMotor.Direction.REVERSE);
+        turretLeft = hardwareMap.get(DcMotor.class, "Turret_Left");
+        turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        turretRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        turretLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -162,7 +175,7 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             double speedFactor = 0.45;
 
 
-            turret_speed = gamepad2.right_stick_y;
+            turret_speed = - gamepad2.right_stick_y;
             slide_speed = gamepad2.right_bumper;
             //claw_speed = gamepad2.right_trigger;
             //claw_speed2 = -gamepad2.left_trigger;
@@ -173,7 +186,6 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             double rightFrontPower = (axial - lateral - yaw) * speedFactor;
             double leftBackPower   = (axial - lateral + yaw) * speedFactor;
             double rightBackPower  = (axial + lateral - yaw) * speedFactor;
-
             if(gamepad1.right_bumper){
                 leftFrontPower = (axial + lateral + yaw);
                 rightFrontPower = (axial - lateral - yaw);
@@ -222,10 +234,39 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            turret.setPower(turret_speed);
+            turretLeft.setPower(turret_speed);
+            turretRight.setPower(turret_speed);
 
             time_since_claw_action++;
 
+            /*if(gamepad2.a) {
+
+                turretLeft.setTargetPosition(Specimen_hang_angle*0);
+                turretRight.setTargetPosition(Specimen_hang_angle*0);
+
+                turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                turretLeft.setPower(1);
+                turretRight.setPower(1);
+
+            } else {
+                turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }*/
+
+            if (gamepad2.b) {
+                if (turretRight.getCurrentPosition() > (Specimen_hang_angle + angle_error)) {
+                    turretRight.setPower(1);
+                    turretLeft.setPower(1);
+                } else if (turretRight.getCurrentPosition() < (Specimen_hang_angle - angle_error)) {
+                    turretRight.setPower(-1);
+                    turretLeft.setPower(-1);
+                } else {
+                    turretRight.setPower(0);
+                    turretLeft.setPower(0);
+                }
+            }
 
 
             if (gamepad2.x && (time_since_claw_action > DELAY)) {
@@ -244,31 +285,30 @@ public class Anarchy_OpMode_handclaw extends LinearOpMode {
             if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
-            } else {
+            } else if(!gamepad2.right_bumper){
                 rightSlide.setPower(0);
                 leftSlide.setPower(0);
             }
-
             if(gamepad2.left_bumper){
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else {
+            } else if(!gamepad2.left_bumper){
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
 
 
             // Show the elapsed game time and wheel power.
-            /*telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Turret_POS: ", turret.getCurrentPosition());
+            telemetry.addData("Turret_LEFT_POS: ", turretLeft.getCurrentPosition());
+            telemetry.addData("Turret_LEFT_POS", turretRight.getCurrentPosition());
             if(claw_isClosed){
                 telemetry.addData("Out", "taking");
             } else {
-                telemetry.addData("In", "taking");
+                telemetry.addData("In", "Taking");
             }
-            telemetry.update();*/
+            telemetry.update();
         }
-    }
-}
+    }}
