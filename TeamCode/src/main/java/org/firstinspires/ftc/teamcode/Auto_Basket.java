@@ -54,7 +54,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Anarchy_Claw_Auto")
+@Autonomous(name="Auto_Basket")
 public class Auto_Basket extends LinearOpMode {
 
     /* Declare OpMode members. */
