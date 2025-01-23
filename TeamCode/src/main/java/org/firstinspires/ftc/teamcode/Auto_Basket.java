@@ -62,11 +62,10 @@ public class Auto_Basket extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor turret = null;
+    private DcMotor turretLeft = null;
+    private DcMotor turretRight = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
-    double turret_speed;
-
     private ElapsedTime     runtime = new ElapsedTime();
 
 
@@ -74,8 +73,10 @@ public class Auto_Basket extends LinearOpMode {
     static final double     TURN_SPEED    = 0.5;
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
-    private double openClawPosition = 0.033;
-    private double closedClawPosition = 0.01;
+    private double openClawPosition = 0.01;
+    private double closedClawPosition = 0.033;
+
+    private double turret_speed = 0.5;
 
     @Override
     public void runOpMode() {
@@ -85,7 +86,8 @@ public class Auto_Basket extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "Backleft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Frontright");
         rightBackDrive = hardwareMap.get(DcMotor.class, "Backright");
-        turret = hardwareMap.get(DcMotor.class, "Turret");
+        turretLeft = hardwareMap.get(DcMotor.class, "Turret_Left");
+        turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
         LeftClaw = hardwareMap.get(Servo.class, "LeftRoller");
@@ -99,11 +101,11 @@ public class Auto_Basket extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        turret.setDirection(DcMotor.Direction.REVERSE);
+        turretRight.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
         RightClaw.setDirection(Servo.Direction.REVERSE);
-        turret_speed = 0.5;
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -146,11 +148,12 @@ public class Auto_Basket extends LinearOpMode {
             telemetry.update();
         }
 
-        leftBackDrive.setPower(-0.7);
-        leftFrontDrive.setPower(-0.7);
-        rightFrontDrive.setPower(0.7);
-        rightBackDrive.setPower(0.7);
-        turret.setPower(-0.85);
+        leftBackDrive.setPower(-0.65);
+        leftFrontDrive.setPower(-0.65);
+        rightFrontDrive.setPower(0.65);
+        rightBackDrive.setPower(0.65);
+        turretLeft.setPower(0.8);
+        turretRight.setPower(0.8);
 
 
         runtime.reset();
@@ -160,10 +163,10 @@ public class Auto_Basket extends LinearOpMode {
         }
 
 
-        leftBackDrive.setPower(0.15);
-        leftFrontDrive.setPower(0.15);
-        rightFrontDrive.setPower(0.15);
-        rightBackDrive.setPower(0.15);
+        leftBackDrive.setPower(0.18);
+        leftFrontDrive.setPower(0.18);
+        rightFrontDrive.setPower(0.18);
+        rightBackDrive.setPower(0.18);
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
@@ -172,7 +175,8 @@ public class Auto_Basket extends LinearOpMode {
             telemetry.update();
         }
 
-        turret.setPower(0.3);
+        turretLeft.setPower(-0.3);
+        turretRight.setPower(-0.3);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.6)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
@@ -181,11 +185,13 @@ public class Auto_Basket extends LinearOpMode {
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.9)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        turret.setPower(-0.3);
+
+        turretLeft.setPower(0.15);
+        turretRight.setPower(0.15);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
@@ -204,7 +210,8 @@ public class Auto_Basket extends LinearOpMode {
         leftFrontDrive.setPower(0.68);
         rightFrontDrive.setPower(-0.68);
         rightBackDrive.setPower(-0.68);
-        turret.setPower(0.75);
+        turretLeft.setPower(-0.3);
+        turretRight.setPower(-0.3);
         leftSlide.setPower(-0.2);
         rightSlide.setPower(-0.2);
         runtime.reset();
@@ -241,8 +248,15 @@ public class Auto_Basket extends LinearOpMode {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+        leftBackDrive.setPower(-0.59);
+        leftFrontDrive.setPower(0.59);
+        rightFrontDrive.setPower(-0.59);
+        rightBackDrive.setPower(0.59);
 
-
+        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
 
         // Step 4:  Stop
         leftBackDrive.setPower(0);

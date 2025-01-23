@@ -55,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Anarchy_Specimen_Auto")
+@Autonomous(name="Auto_Specimen")
 public class Auto_Specimen extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -173,6 +173,18 @@ public class Auto_Specimen extends LinearOpMode {
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        leftSlide.setPower(0.1);
+        rightSlide.setPower(0.1);
+        sleep(500);
+
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+        runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.6)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
@@ -181,14 +193,6 @@ public class Auto_Specimen extends LinearOpMode {
         leftSlide.setPower(0.0);
         rightSlide.setPower(0.0);
         sleep(500);
-
-        LeftClaw.setPosition(openClawPosition);
-        RightClaw.setPosition(openClawPosition);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
 
 //Move Turret back down
         turretLeft.setPower(-0.7);
@@ -215,6 +219,7 @@ public class Auto_Specimen extends LinearOpMode {
         rightSlide.setPower(0.0);
         //sleep(500);
         /*
+
 //Move Forward
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
