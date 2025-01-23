@@ -111,11 +111,15 @@ public class Auto_Specimen extends LinearOpMode {
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
-
         waitForStart();
+
+        // Consider replacing with a method call
+        //OpenClaw();
         LeftClaw.setPosition(closedClawPosition);
         RightClaw.setPosition(closedClawPosition);
 
+        //Consider replacing the block below with
+        //MoveTurret(1.0, 0.75);
 
         //Move Turret Up
         turretLeft.setPower(1);
@@ -128,7 +132,10 @@ public class Auto_Specimen extends LinearOpMode {
         turretLeft.setPower(0.0);
         turretRight.setPower(0.0);
 
-//Move Forwards
+        // Consider replacing with a method call
+        //DriveForward(1.0, 0.4);
+
+        //Move Forwards
         leftFrontDrive.setPower(1);
         leftBackDrive.setPower(1);
         rightFrontDrive.setPower(1);
@@ -139,15 +146,19 @@ public class Auto_Specimen extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
+        // this seems redundant
         leftBackDrive.setPower(1);
         leftFrontDrive.setPower(-1);
         rightFrontDrive.setPower(1);
         rightBackDrive.setPower(-1);
+
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.4)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
         leftFrontDrive.setPower(1);
         leftBackDrive.setPower(1);
         rightFrontDrive.setPower(1);
@@ -164,12 +175,12 @@ public class Auto_Specimen extends LinearOpMode {
 
         sleep(500);
 
-
 //Extend Slides
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
+
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
@@ -315,7 +326,6 @@ public class Auto_Specimen extends LinearOpMode {
         }
         */
 
-
         // Step 4:  Stop
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
@@ -326,4 +336,90 @@ public class Auto_Specimen extends LinearOpMode {
         telemetry.update();
         sleep(1000);
     }
+
+    public void OpenClaw() {
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+    }
+
+    public void CloseClaw() {
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
+    }
+
+    public void StrafeRight(double power, double duration) {
+        // positive power strafes right
+        leftBackDrive.setPower(-power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(power);
+        sleep((int)(duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void DriveForward(double power, double duration) {
+        leftBackDrive.setPower(power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(power);
+        rightBackDrive.setPower(power);
+        sleep((int) (duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void TurnRight(double power, double duration) {
+        // need to fix these for turning
+        leftBackDrive.setPower(-power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(power);
+        sleep((int) (duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void MoveTurret(double power, double duration) {
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+        sleep((int) (duration * 1000));
+        turretLeft.setPower(0);
+        turretRight.setPower(0);
+    }
+
+    public void MoveSlide(double power, double duration) {
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+        sleep((int) (duration * 1000));
+        rightSlide.setPower(0);
+        leftSlide.setPower(0);
+    }
+
+    public void PositionTurret(int position, double power) {
+        //Function to move arm to a specific angle
+        turretLeft.setTargetPosition(position);
+        turretRight.setTargetPosition(position);
+        turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void PositionSlide(int position, double power) {
+        // Function to move slide to a position and hold
+        rightSlide.setTargetPosition(position);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
+
+
 }

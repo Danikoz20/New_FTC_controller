@@ -92,9 +92,6 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
     double openClawPosition = 0.045;
     double closedClawPosition = 0.015;
 
-    int HighChamberAngle = 1000;
-    int HighBasketAngle = 1500;
-    int WallAngle = 200;
 
     // Flag to indicate if macro is active
     private boolean TurretMacroActive = false;
@@ -158,14 +155,14 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            // ------------ DRIVING -------------
+
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x * 0.7;
-
-            slide_speed = gamepad2.right_bumper;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -222,14 +219,18 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+
+            // ------------ ARM TURRET -------------
             turret_speed = -gamepad2.right_stick_y;
 
-            // Check for joystick input to cancel Turret macro
+
+            // Any joystick input will cancel Turret macro and return to manual control
             if (Math.abs(turret_speed) > 0.01) {
                 TurretMacroActive = false;
                 //not sure if needed
                 turretLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 turretRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                //move the arm
                 turretLeft.setPower(turret_speed);
                 turretRight.setPower(turret_speed);
             }
@@ -237,14 +238,12 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             // Activate Turret Macro for high chamber angle
             if (gamepad1.a && !TurretMacroActive) {
                 TurretMacroActive = true;
-                turretLeft.setTargetPosition(HighChamberAngle);
-                turretRight.setTargetPosition(HighChamberAngle);
-                turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                turretLeft.setPower(0.5);
-                turretRight.setPower(0.5);
+                //uncomment below to test macro
+                //PositionTurret(1200, 0.5);
             }
 
+
+            // ------------ SLIDE -------------
 
             time_since_claw_action++;
 
@@ -261,6 +260,9 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
                 time_since_claw_action = 0;
             }
 
+            // ------------ CLAW -------------
+            slide_speed = gamepad2.right_bumper;
+            
             if(gamepad2.right_bumper){
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
@@ -277,8 +279,6 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
                 rightSlide.setPower(0);
             }
 
-
-
             // Show the elapsed game time and wheel power.
             /*telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
@@ -292,4 +292,26 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             telemetry.update();*/
         }
     }
+
+    public void PositionTurret(int position, double power) {
+        //Function to move arm to a specific angle
+        turretLeft.setTargetPosition(position);
+        turretRight.setTargetPosition(position);
+        turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void PositionSlide(int position, double power) {
+        // Function to move slide to a position and hold
+        rightSlide.setTargetPosition(position);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
+
+
 }
