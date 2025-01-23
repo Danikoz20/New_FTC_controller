@@ -268,4 +268,89 @@ public class Auto_Basket extends LinearOpMode {
         telemetry.update();
         sleep(1000);
     }
+
+    // -------------- Helper functions -------------
+    public void OpenClaw() {
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+    }
+
+    public void CloseClaw() {
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
+    }
+
+    public void StrafeRight(double power, double duration) {
+        // positive power strafes right
+        leftBackDrive.setPower(-power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(power);
+        sleep((int)(duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void DriveForward(double power, double duration) {
+        leftBackDrive.setPower(power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(power);
+        rightBackDrive.setPower(power);
+        sleep((int) (duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void TurnRight(double power, double duration) {
+        // need to fix these for turning
+        leftBackDrive.setPower(-power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(power);
+        sleep((int) (duration * 1000));
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void MoveTurret(double power, double duration) {
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+        sleep((int) (duration * 1000));
+        turretLeft.setPower(0);
+        turretRight.setPower(0);
+    }
+
+    public void MoveSlide(double power, double duration) {
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+        sleep((int) (duration * 1000));
+        rightSlide.setPower(0);
+        leftSlide.setPower(0);
+    }
+
+    public void PositionTurret(int position, double power) {
+        //Function to move arm to a specific angle
+        turretLeft.setTargetPosition(position);
+        turretRight.setTargetPosition(position);
+        turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void PositionSlide(int position, double power) {
+        // Function to move slide to a position and hold
+        rightSlide.setTargetPosition(position);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
 }
