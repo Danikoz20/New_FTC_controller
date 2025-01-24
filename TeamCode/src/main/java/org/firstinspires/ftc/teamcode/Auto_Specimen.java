@@ -111,11 +111,15 @@ public class Auto_Specimen extends LinearOpMode {
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
-
         waitForStart();
+
+        // Consider replacing with a method call
+        //OpenClaw();
         LeftClaw.setPosition(closedClawPosition);
         RightClaw.setPosition(closedClawPosition);
 
+        //Consider replacing the block below with
+        //MoveTurret(1.0, 0.75);
 
         //Move Turret Up
         turretLeft.setPower(1);
@@ -128,7 +132,10 @@ public class Auto_Specimen extends LinearOpMode {
         turretLeft.setPower(0.0);
         turretRight.setPower(0.0);
 
-//Move Forwards
+        // Consider replacing with a method call
+        //DriveForward(1.0, 0.4);
+
+        //Move Forwards
         leftFrontDrive.setPower(1);
         leftBackDrive.setPower(1);
         rightFrontDrive.setPower(1);
@@ -139,15 +146,19 @@ public class Auto_Specimen extends LinearOpMode {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
+        // this seems redundant
         leftBackDrive.setPower(1);
         leftFrontDrive.setPower(-1);
         rightFrontDrive.setPower(1);
         rightBackDrive.setPower(-1);
+
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.4)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
         leftFrontDrive.setPower(1);
         leftBackDrive.setPower(1);
         rightFrontDrive.setPower(1);
@@ -164,12 +175,12 @@ public class Auto_Specimen extends LinearOpMode {
 
         sleep(500);
 
-
 //Extend Slides
         leftFrontDrive.setPower(0.5);
         leftBackDrive.setPower(0.5);
         rightFrontDrive.setPower(0.5);
         rightBackDrive.setPower(0.5);
+
         leftSlide.setPower(0.7);
         rightSlide.setPower(0.7);
         runtime.reset();
@@ -336,7 +347,6 @@ public class Auto_Specimen extends LinearOpMode {
             telemetry.update();
         }
         */
-
 
         // Step 4:  Stop
         leftBackDrive.setPower(0);

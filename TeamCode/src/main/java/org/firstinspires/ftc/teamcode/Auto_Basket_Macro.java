@@ -54,8 +54,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Auto_Basket")
-public class Auto_Basket extends LinearOpMode {
+@Autonomous(name="Auto_Basket_Macro")
+public class Auto_Basket_Macro extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor leftFrontDrive = null;
@@ -68,15 +68,12 @@ public class Auto_Basket extends LinearOpMode {
     private DcMotor leftSlide = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-
     static final double FORWARD_SPEED = 0.6;
     static final double TURN_SPEED = 0.5;
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
-    private double openClawPosition = 0.01;
-    private double closedClawPosition = 0.033;
-
-    private double turret_speed = 0.5;
+    private double openClawPosition = 0.02;
+    private double closedClawPosition = 0.04;
 
     @Override
     public void runOpMode() {
@@ -97,41 +94,34 @@ public class Auto_Basket extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        LeftClaw.setDirection(Servo.Direction.FORWARD);
+        RightClaw.setDirection(Servo.Direction.REVERSE);
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        turretLeft.setDirection(DcMotor.Direction.FORWARD);
         turretRight.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
-        RightClaw.setDirection(Servo.Direction.REVERSE);
 
+        turretLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
+        // close claw so the preloaded specimen does not fall out
+        CloseClaw();
 
         // Wait for the game to start (driver presses START)
         waitForStart();
 
-        // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
-
-        // Step 1:  Drive forward for 3 seconds
-        leftFrontDrive.setPower(FORWARD_SPEED);
-        leftBackDrive.setPower(FORWARD_SPEED);
-        rightBackDrive.setPower(FORWARD_SPEED);
-        rightFrontDrive.setPower(FORWARD_SPEED);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
-            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        // Step 2:  Strafe Left
-        leftBackDrive.setPower(0.59);
-        leftFrontDrive.setPower(-0.59);
-        rightFrontDrive.setPower(0.59);
-        rightBackDrive.setPower(-0.59);
+        Drive(0.6, 400);
+        Strafe(-0.6, 1000);
 
         //turret.setPower(0.3);
         runtime.reset();
@@ -279,5 +269,95 @@ public class Auto_Basket extends LinearOpMode {
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);
+    }
+
+    // -------------- Helper functions -------------
+    public void OpenClaw() {
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+    }
+
+    public void CloseClaw() {
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
+    }
+
+    public void Strafe(double power, int duration) {
+        // positive power strafes right
+        leftBackDrive.setPower(-power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(power);
+        sleep(duration);
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void Drive(double power, int duration) {
+        //positive drives forward
+        leftBackDrive.setPower(power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(power);
+        rightBackDrive.setPower(power);
+        sleep(duration);
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void Turn(double power, int duration) {
+        // need to fix these for turning
+        leftBackDrive.setPower(power);
+        leftFrontDrive.setPower(power);
+        rightFrontDrive.setPower(-power);
+        rightBackDrive.setPower(-power);
+        sleep(duration);
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+    }
+
+    public void MoveTurret(double power, int duration) {
+        turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+        sleep(duration);
+        turretLeft.setPower(0);
+        turretRight.setPower(0);
+    }
+
+    public void MoveSlide(double power, int duration) {
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+        sleep(duration);
+        rightSlide.setPower(0);
+        leftSlide.setPower(0);
+    }
+
+    public void PositionTurret(int position, double power) {
+        //Function to move arm to a specific angle
+        turretLeft.setTargetPosition(position);
+        turretRight.setTargetPosition(position);
+        turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void PositionSlide(int position, double power) {
+        // Function to move slide to a position and hold
+        rightSlide.setTargetPosition(position);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
     }
 }

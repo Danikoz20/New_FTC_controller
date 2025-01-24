@@ -79,21 +79,18 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
     private DcMotor turretRight = null;
     private DcMotor rightSlide = null;
     private DcMotor leftSlide = null;
-    private Servo Clawservo = null;
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
     double turret_speed;
     boolean slide_speed;
-    double zeroOffset = 0.2;
-    double increment = 0;
-    double decrement = 0;
-    double claw_speed;
-    double claw_speed2;
+
+    double speedFactor = 0.45;
     int time_since_claw_action = 0;
-    int DELAY = 2000;
+    int CLAW_DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.045;
-    private double closedClawPosition = 0.01;
+    double closedClawPosition = 0.04;
+    double openClawPosition = 0.02;
+
 
     @Override
     public void runOpMode() {
@@ -113,11 +110,8 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         turretRight = hardwareMap.get(DcMotor.class, "Turret_Right");
         rightSlide = hardwareMap.get(DcMotor.class, "Rightslide");
         leftSlide = hardwareMap.get(DcMotor.class, "Leftslide");
-        // Clawservo = hardwareMap.get(Servo.class, "Servo1");
         LeftClaw = hardwareMap.get(Servo.class, "LeftRoller");
         RightClaw = hardwareMap.get(Servo.class, "RightRoller");
-        RightClaw.setDirection(Servo.Direction.REVERSE);
-
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -129,25 +123,30 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
+        LeftClaw.setDirection(Servo.Direction.FORWARD);
+        RightClaw.setDirection(Servo.Direction.REVERSE);
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        turretLeft.setDirection(DcMotor.Direction.FORWARD);
         turretRight.setDirection(DcMotor.Direction.REVERSE);
         rightSlide.setDirection(DcMotor.Direction.FORWARD);
         leftSlide.setDirection(DcMotor.Direction.REVERSE);
 
+        turretLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        LeftClaw.setPosition(closedClawPosition);
-        RightClaw.setPosition(closedClawPosition);
 
-        //initialize the servo position in open state
-        // Clawservo.setPosition(0);
-
-
+        //initialize the Claw servo position in closed state
+        CloseClaw();
+        claw_isClosed = true;
 
         waitForStart();  // Wait until driver presses start
         runtime.reset();
@@ -156,6 +155,7 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            // ------------ DRIVING -------------
 
             double max;
 
@@ -163,13 +163,6 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x * 0.7;
-            double speedFactor = 0.45;
-
-
-            turret_speed = -gamepad2.right_stick_y;
-            slide_speed = gamepad2.right_bumper;
-            //claw_speed = gamepad2.right_trigger;
-            //claw_speed2 = -gamepad2.left_trigger;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -226,54 +219,136 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            turretLeft.setPower(turret_speed);
-            turretRight.setPower(turret_speed);
+
+            // ------------ ARM TURRET -------------
+            turret_speed = -gamepad2.right_stick_y;
+
+            // Any joystick input will cancel Turret macro and return to manual control
+            if (turret_speed!=0.0) {
+                MoveTurret(turret_speed);
+            } else if (gamepad2.y) {
+                // hanging specimen
+                PositionTurret(1500, 1);
+            } else if (gamepad2.b) {
+                // picking up specimen
+                PositionTurret(900, 1);
+            } else {
+                MoveTurret(0);
+            }
+
+
+            // ------------ CLAW -------------
 
             time_since_claw_action++;
 
-
-
-            if (gamepad2.x && (time_since_claw_action > DELAY)) {
+            if (gamepad2.x && (time_since_claw_action > CLAW_DELAY)) {
                 if (claw_isClosed) {
-                    LeftClaw.setPosition(openClawPosition);
-                    RightClaw.setPosition(openClawPosition);
+                    OpenClaw();
                     claw_isClosed = false;
                 } else {  // claw is open
-                    LeftClaw.setPosition(closedClawPosition);
-                    RightClaw.setPosition(closedClawPosition);
+                    CloseClaw();
                     claw_isClosed = true;
                 }
                 time_since_claw_action = 0;
             }
 
-            if(gamepad2.right_bumper){
-                rightSlide.setPower(1);
-                leftSlide.setPower(1);
+            /*if (gamepad2.x) {
+                OpenClaw();
+            }
+            if (gamepad2.y) {
+                CloseClaw();
+            }
+            */
+
+            // ------------ SLIDE -------------
+            slide_speed = gamepad2.right_bumper;
+            
+            if(gamepad2.right_bumper) {
+                MoveSlide(1);
+            } else if(gamepad2.left_bumper) {
+                MoveSlide(-1);
             } else {
-                rightSlide.setPower(0);
-                leftSlide.setPower(0);
+                MoveSlide(0);
             }
 
-            if(gamepad2.left_bumper){
-                leftSlide.setPower(-1);
-                rightSlide.setPower(-1);
-            } else {
-                leftSlide.setPower(0);
-                rightSlide.setPower(0);
-            }
+            // Show the elapsed game time and turret position.
+            // ALERT telemetry on Dcmotors is VERY slow - makes the claw delay very long
 
+            //telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+            //telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            //telemetry.addData("RTurret_POS", turretRight.getCurrentPosition());
+            //telemetry.addData("LTurret_POS", turretLeft.getCurrentPosition());
+            //telemetry.addData("RSlide_POS", rightSlide.getCurrentPosition());
+            //telemetry.addData("LSlide_POS", leftSlide.getCurrentPosition());
 
-            // Show the elapsed game time and wheel power.
-            /*telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Turret_POS: ", turret.getCurrentPosition());
             if(claw_isClosed){
-                telemetry.addData("Out", "taking");
+                telemetry.addData("Claw Closed", time_since_claw_action);
             } else {
-                telemetry.addData("In", "taking");
+                telemetry.addData("Claw Open", time_since_claw_action);
             }
-            telemetry.update();*/
+            telemetry.update();
+
         }
+    }
+
+    // ------------------ Helper Functions ----------------
+
+    public void PositionTurret(int position, double power) {
+        //Function to move arm to a specific angle
+        turretLeft.setTargetPosition(position);
+        turretRight.setTargetPosition(position);
+        turretLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void PositionSlide(int position, double power) {
+        // Function to move slide to a position
+        rightSlide.setTargetPosition(position);
+        leftSlide.setTargetPosition(position);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
+
+    public void MoveSlide(double power) {
+        //Move slide with some power: positive means extend
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setPower(power);
+        leftSlide.setPower(power);
+    }
+
+    public void MoveTurret(double power) {
+        //Move turret with some power: positive means up
+        turretLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turretLeft.setPower(power);
+        turretRight.setPower(power);
+    }
+
+    public void OpenClaw() {
+        LeftClaw.setPosition(openClawPosition);
+        RightClaw.setPosition(openClawPosition);
+    }
+
+    public void CloseClaw() {
+        LeftClaw.setPosition(closedClawPosition);
+        RightClaw.setPosition(closedClawPosition);
+    }
+
+    public void Hang_specimen() {
+        //action sequence for specimen scoring
+        //HangMacroActive = true;
+        PositionTurret(1900, 0.8);
+        PositionSlide(1100, 0.8);
+        sleep(200);
+        OpenClaw();
+        sleep(300);
+        PositionTurret(900, 0.8);
+        PositionSlide(100, 0.8);
     }
 }
