@@ -88,9 +88,6 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
     int time_since_claw_action = 0;
     int CLAW_DELAY = 2000;
     boolean claw_isClosed = true;
-    double closedClawPosition = 0.04;
-    double openClawPosition = 0.02;
-
 
     @Override
     public void runOpMode() {
@@ -268,7 +265,11 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
             } else if(gamepad2.left_bumper) {
                 MoveSlide(-1);
             } else {
+                // no power to the motors
                 MoveSlide(0);
+                // or make sure the slide holds its latest position
+                int slide_position = rightSlide.getCurrentPosition();
+                PositionSlide(slide_position, 1);
             }
 
             // Show the elapsed game time and turret position.
@@ -331,15 +332,16 @@ public class TeleOP_shortClaw_Macro extends LinearOpMode {
     }
 
     public void OpenClaw() {
+        double openClawPosition = 0.02;
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
     }
 
     public void CloseClaw() {
+        double closedClawPosition = 0.04;
         LeftClaw.setPosition(closedClawPosition);
         RightClaw.setPosition(closedClawPosition);
     }
-
     public void Hang_specimen() {
         //action sequence for specimen scoring
         //HangMacroActive = true;

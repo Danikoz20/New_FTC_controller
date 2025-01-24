@@ -69,14 +69,10 @@ public class Auto_Specimen_Macro extends LinearOpMode {
     private DcMotor leftSlide = null;
     private TouchSensor touchSensor_left = null;
     private TouchSensor touchSensor_right = null;
-
-    private ElapsedTime     runtime = new ElapsedTime();
-
-
+    private ElapsedTime runtime = new ElapsedTime();
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
-    private double openClawPosition = 0.02;
-    private double closedClawPosition = 0.04;
+
 
     @Override
     public void runOpMode() {
@@ -149,11 +145,13 @@ public class Auto_Specimen_Macro extends LinearOpMode {
 
     // ------------------ Helper Functions ----------------
     public void OpenClaw() {
+        double openClawPosition = 0.02;
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
     }
 
     public void CloseClaw() {
+        double closedClawPosition = 0.04;
         LeftClaw.setPosition(closedClawPosition);
         RightClaw.setPosition(closedClawPosition);
     }
