@@ -220,10 +220,10 @@ public class Auto_Basket extends LinearOpMode {
             telemetry.update();
         }
 
-        leftBackDrive.setPower(-0.4);
-        leftFrontDrive.setPower(-0.4);
-        rightFrontDrive.setPower(-0.4);
-        rightBackDrive.setPower(-0.4);
+        leftBackDrive.setPower(0.4);
+        leftFrontDrive.setPower(0.4);
+        rightFrontDrive.setPower(0.4);
+        rightBackDrive.setPower(0.4);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 0.5)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
@@ -248,10 +248,22 @@ public class Auto_Basket extends LinearOpMode {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+        turretLeft.setPower(0);
+        turretRight.setPower(0);
         leftBackDrive.setPower(-0.59);
         leftFrontDrive.setPower(0.59);
         rightFrontDrive.setPower(-0.59);
         rightBackDrive.setPower(0.59);
+
+        while (opModeIsActive() && (runtime.seconds() < 2.3)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        leftBackDrive.setPower(1);
+        leftFrontDrive.setPower(1);
+        rightFrontDrive.setPower(-1);
+        rightBackDrive.setPower(-1);
 
         while (opModeIsActive() && (runtime.seconds() < 1.5)) {
             telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());

@@ -210,6 +210,10 @@ public class Auto_Specimen extends LinearOpMode {
 
         leftSlide.setPower(-0.5);
         rightSlide.setPower(-0.5);
+        leftBackDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 2)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
@@ -217,6 +221,24 @@ public class Auto_Specimen extends LinearOpMode {
         }
         leftSlide.setPower(0.0);
         rightSlide.setPower(0.0);
+        leftBackDrive.setPower(-1);
+        leftFrontDrive.setPower(-1);
+        rightBackDrive.setPower(-1);
+        rightFrontDrive.setPower(-1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 0.9)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        leftBackDrive.setPower(1);
+        leftFrontDrive.setPower(-1);
+        rightFrontDrive.setPower(1);
+        rightBackDrive.setPower(-1);
+        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
         //sleep(500);
         /*
 
