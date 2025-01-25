@@ -70,6 +70,8 @@ public class Auto_Basket_Macro extends LinearOpMode {
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
 
+    private double power_adjust = 1.0;
+
     @Override
     public void runOpMode() {
 
@@ -106,6 +108,12 @@ public class Auto_Basket_Macro extends LinearOpMode {
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //this should help with battery voltage issues
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
@@ -115,21 +123,61 @@ public class Auto_Basket_Macro extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
 
-        Drive(0.6, 400);
-        Turn(-1, 500);
-        //PositionTurret(1700, .8);
-        //sleep(1000);
-        //PositionSlide(1000, 0.8);
-        //Drive(.2, 1000);
-        //OpenClaw();
-        //sleep(1000);
-        //Drive(-.3, 300);
+        Strafe(0.5, 400);
+        PositionTurret(3000, .8);
+        sleep(1000);
+        PositionSlide(1800, 0.8);
+        sleep(1000);
+        Drive(.3, 500);
+        OpenClaw();
+        sleep(300);
+
+       // lifts the arm a bit so it doesn't get stuck on the basket
+        PositionTurret(3100,0.8);
+        sleep(100);
+        PositionSlide(400,0.8);
+        Drive(-0.3,500);
+        Turn(0.8,630);
+        // align with the wall
+        Strafe(-0.5,800);
+        //goes to middle sample
+        //Drive(0.5, 200);
+        PositionTurret(290,1.0);
+        sleep(1000);
+        Strafe(0.3,340);
+        PositionSlide(1300,0.8);
+        sleep(500);
+        CloseClaw();
+        sleep(500);
+
+        PositionTurret(3000, 0.8);
+        sleep(1000);
+        PositionSlide(1800, 0.8);
+        sleep(1000);
+        Turn(0.8, 1000);
+        Drive(.3, 500);
+        OpenClaw();
+        sleep(300);
+        PositionTurret(3100, 0.8);
+        sleep(100);
+        Drive(-.3, 300);
+        Turn(-0.8,700);
+        sleep(200);
+        PositionTurret(330,1.0);
+        sleep(1000);
+        PositionSlide(1350,0.8);
+        sleep(1000);
+        //Drive(0.3,500);
+        CloseClaw();
+
+        sleep(1000);
+        PositionTurret(3000,0.8);
 
     }
 
     // -------------- Helper functions -------------
     public void OpenClaw() {
-        double openClawPosition = 0.01;
+        double openClawPosition = 0.015;
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
     }
@@ -145,7 +193,7 @@ public class Auto_Basket_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(-power);
         rightBackDrive.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -158,8 +206,7 @@ public class Auto_Basket_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(power);
         rightBackDrive.setPower(power);
-        sleep(duration);
-        leftBackDrive.setPower(0);
+        sleep((int)(duration * power_adjust));
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
         rightBackDrive.setPower(0);
@@ -171,7 +218,7 @@ public class Auto_Basket_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(-power);
         rightBackDrive.setPower(-power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -183,7 +230,7 @@ public class Auto_Basket_Macro extends LinearOpMode {
         turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretLeft.setPower(power);
         turretRight.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         turretLeft.setPower(0);
         turretRight.setPower(0);
     }
@@ -193,7 +240,7 @@ public class Auto_Basket_Macro extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setPower(power);
         leftSlide.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         rightSlide.setPower(0);
         leftSlide.setPower(0);
     }

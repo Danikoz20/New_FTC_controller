@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -66,7 +67,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 
 @TeleOp(name="TeleOP_shortClaw", group="Linear OpMode Hand_Claw_doubleturret")
-//@Disabled
+@Disabled
 public class TeleOP_shortClaw extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -92,8 +93,8 @@ public class TeleOP_shortClaw extends LinearOpMode {
     int time_since_claw_action = 0;
     int DELAY = 2000;
     boolean claw_isClosed = true;
-    private double openClawPosition = 0.045;
-    private double closedClawPosition = 0.01;
+    private double openClawPosition = 0.04;
+    private double closedClawPosition = 0.015;
 
     @Override
     public void runOpMode() {

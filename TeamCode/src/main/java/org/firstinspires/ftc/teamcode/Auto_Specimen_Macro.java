@@ -76,7 +76,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Servo LeftClaw = null;
     private Servo RightClaw = null;
-
+    private double power_adjust = 1.0;
 
     @Override
     public void runOpMode() {
@@ -114,6 +114,11 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //this should help with battery voltage issues
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
@@ -164,7 +169,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
 
     // ------------------ Helper Functions ----------------
     public void OpenClaw() {
-        double openClawPosition = 0.02;
+        double openClawPosition = 0.015;
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
     }
@@ -181,7 +186,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(-power);
         rightBackDrive.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -194,7 +199,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(power);
         rightBackDrive.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -207,7 +212,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         leftFrontDrive.setPower(power);
         rightFrontDrive.setPower(-power);
         rightBackDrive.setPower(-power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         leftBackDrive.setPower(0);
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
@@ -219,7 +224,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         turretRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretLeft.setPower(power);
         turretRight.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         turretLeft.setPower(0);
         turretRight.setPower(0);
     }
@@ -229,7 +234,7 @@ public class Auto_Specimen_Macro extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setPower(power);
         leftSlide.setPower(power);
-        sleep(duration);
+        sleep((int)(duration * power_adjust));
         rightSlide.setPower(0);
         leftSlide.setPower(0);
     }
