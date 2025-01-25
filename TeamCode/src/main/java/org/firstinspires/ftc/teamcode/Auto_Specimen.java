@@ -237,14 +237,14 @@ public class Auto_Specimen extends LinearOpMode {
         rightBackDrive.setPower(-1);
         rightFrontDrive.setPower(-1);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.9)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.4)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        leftBackDrive.setPower(1);
-        leftFrontDrive.setPower(-1);
-        rightFrontDrive.setPower(1);
-        rightBackDrive.setPower(-1);
+        leftBackDrive.setPower(-1);
+        leftFrontDrive.setPower(1);
+        rightFrontDrive.setPower(-1);
+        rightBackDrive.setPower(1);
         while (opModeIsActive() && (runtime.seconds() < 1.3)) {
             telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
             telemetry.update();

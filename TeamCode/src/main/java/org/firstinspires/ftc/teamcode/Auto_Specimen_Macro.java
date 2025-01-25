@@ -36,6 +36,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * This OpMode illustrates the concept of driving a path based on time.
  * The code is structured as a LinearOpMode
@@ -58,6 +61,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="Auto_Specimen_Macro")
 public class Auto_Specimen_Macro extends LinearOpMode {
 
+    private static final Logger log = LoggerFactory.getLogger(Auto_Specimen_Macro.class);
     /* Declare OpMode members. */
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -118,26 +122,41 @@ public class Auto_Specimen_Macro extends LinearOpMode {
 
         waitForStart();
 
-        PositionTurret(1900, 0.5);
-        sleep(300);
-        Drive(0.7, 900);
-        //sleep(3000);
+        PositionTurret(2000, 1);
+        sleep(1000);
+        Drive(0.5, 1269);
+        sleep(1000);
         //Strafe(-1, 400);
         //Drive(0.5, 200);
-        PositionSlide(1100, 0.7);
-        Drive(0.1, 1);
-        sleep(500);
+        PositionSlide(600, 0.7);
+        Drive(1.0, 800);
+        //sleep(1000);
         OpenClaw();
         // give the claw some time to open
-        sleep(700);
+        sleep(500);
         // collapse slide and set it horizontal
         PositionSlide(100, 0.7);
         //sleep(500);
-        PositionTurret(800, 0.7);
+        PositionTurret(750, 0.7);
+
+        //move forward to the cage if it got pushed back
+        Drive(0.4, 500);
         Drive(-0.5, 700);
-        Turn(0.7, 1100);
+        //Turn(0.7, 1100);
         //strafe into the right wall to straighten orientation
-        Strafe(1.0, 200);
+        Strafe(0.5, 1200);
+        //Drive(-1, 1000);
+        Drive(0.7, 1000);
+        Turn(-0.3, 90);
+        Strafe(0.5, 370);
+        Drive(-0.5, 1700);
+
+        //go get the second sample
+        Drive(0.5,750);
+        Strafe(-0.3,370);
+        Drive(0.6,750);
+        Strafe(0.5,500);
+        Drive(-0.6,1200);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

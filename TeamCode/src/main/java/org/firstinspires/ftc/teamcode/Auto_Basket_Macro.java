@@ -116,159 +116,20 @@ public class Auto_Basket_Macro extends LinearOpMode {
         waitForStart();
 
         Drive(0.6, 400);
-        Strafe(-0.6, 1000);
+        Turn(-1, 500);
+        //PositionTurret(1700, .8);
+        //sleep(1000);
+        //PositionSlide(1000, 0.8);
+        //Drive(.2, 1000);
+        //OpenClaw();
+        //sleep(1000);
+        //Drive(-.3, 300);
 
-        //turret.setPower(0.3);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        // Step 3:  Drive Forward
-
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.01)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        leftBackDrive.setPower(-0.65);
-        leftFrontDrive.setPower(-0.65);
-        rightFrontDrive.setPower(0.65);
-        rightBackDrive.setPower(0.65);
-        turretLeft.setPower(0.8);
-        turretRight.setPower(0.8);
-
-
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.8)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-
-        leftBackDrive.setPower(0.18);
-        leftFrontDrive.setPower(0.18);
-        rightFrontDrive.setPower(0.18);
-        rightBackDrive.setPower(0.18);
-        leftSlide.setPower(0.7);
-        rightSlide.setPower(0.7);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        turretLeft.setPower(-0.3);
-        turretRight.setPower(-0.3);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        LeftClaw.setPosition(openClawPosition);
-        RightClaw.setPosition(openClawPosition);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        turretLeft.setPower(0.15);
-        turretRight.setPower(0.15);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        leftBackDrive.setPower(-0.5);
-        leftFrontDrive.setPower(-0.5);
-        rightFrontDrive.setPower(-0.5);
-        rightBackDrive.setPower(-0.5);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.6)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        leftBackDrive.setPower(0.68);
-        leftFrontDrive.setPower(0.68);
-        rightFrontDrive.setPower(-0.68);
-        rightBackDrive.setPower(-0.68);
-        turretLeft.setPower(-0.3);
-        turretRight.setPower(-0.3);
-        leftSlide.setPower(-0.2);
-        rightSlide.setPower(-0.2);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.8)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        leftBackDrive.setPower(0.4);
-        leftFrontDrive.setPower(0.4);
-        rightFrontDrive.setPower(0.4);
-        rightBackDrive.setPower(0.4);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        leftBackDrive.setPower(0.19);
-        leftFrontDrive.setPower(-0.19);
-        rightFrontDrive.setPower(0.19);
-        rightBackDrive.setPower(-0.19);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.5)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        sleep(1000);
-        leftBackDrive.setPower(0.5);
-        leftFrontDrive.setPower(0.5);
-        rightFrontDrive.setPower(0.5);
-        rightBackDrive.setPower(0.5);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-        turretLeft.setPower(0);
-        turretRight.setPower(0);
-        leftBackDrive.setPower(-0.59);
-        leftFrontDrive.setPower(0.59);
-        rightFrontDrive.setPower(-0.59);
-        rightBackDrive.setPower(0.59);
-
-        while (opModeIsActive() && (runtime.seconds() < 2.3)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        leftBackDrive.setPower(1);
-        leftFrontDrive.setPower(1);
-        rightFrontDrive.setPower(-1);
-        rightBackDrive.setPower(-1);
-
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
-            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        // Step 4:  Stop
-        leftBackDrive.setPower(0);
-        leftFrontDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        rightBackDrive.setPower(0);
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        sleep(1000);
     }
 
     // -------------- Helper functions -------------
     public void OpenClaw() {
-        double openClawPosition = 0.02;
+        double openClawPosition = 0.01;
         LeftClaw.setPosition(openClawPosition);
         RightClaw.setPosition(openClawPosition);
     }
